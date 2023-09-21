@@ -1,47 +1,134 @@
 'use strict';
-//2.1 Mostrar gatitos desde JS
+
+//Constantes que usamos en el HTML
+const newForm = document.querySelector('.js-new-form');
 const listElement = document.querySelector('.js-list');
 
-const newForm = document.querySelector('.js-new-form');
-//newForm.classList.remove('collapsed');
+const buttonAdd = document.querySelector('.js-btn-add');
+const buttonCancelForm = document.querySelector('.js-btn-cancel');
+const inputDesc = document.querySelector('.js-input-desc');
+const inputPhoto = document.querySelector('.js-input-photo');
+const inputName = document.querySelector('.js-input-name');
+const inputRace = document.querySelector('.js-input-race');
+const labelMessageError = document.querySelector('.js-label-error');
 
-/* Agregar el código del li desde HTMl Repetir este proceso por cada gatito */
-const kittenOne = `<li class="card">
-<article>
-  <img
-    class="card_img"
-    src="https://dev.adalab.es/gato-siames.webp"
-    alt="gatito"
-  />
-  <h3 class="card_title">Anastacio</h3>
-  <p class="card_description">
-  "Porte elegante, su patrón de color tan característico y sus ojos de un azul intenso, pero su historia se remonta a Asía al menos hace 500 años, donde tuvo su origen muy posiblemente."
-  </p>
-</article>
-</li>`;
+const linkNewFormElement = document.querySelector('.js-button-new-form');
 
-const kittenTwo = ` <li class="card">
-  <img
-    class="card_img"
-    src="https://dev.adalab.es/sphynx-gato.webp"
-    alt="gatito"
-  />
-  <h3 class="card_title">Fiona</h3>
-  <p class="card_description">
-  "Produce fascinación y curiosidad. Exótico, raro, bello, extraño… hasta con pinta de alienígena han llegado a definir a esta raza gatuna que se caracteriza por la «ausencia» de pelo."
-  </p>
-</li>`;
+const buttonSearch = document.querySelector('.js-button-search');
+const input_search_desc = document.querySelector('.js_in_search_desc');
 
-const kittenThree = ` <li class="card">
-  <img
-    class="card_img"
-    src="https://dev.adalab.es/maine-coon-cat.webp"
-    alt="gatito"
-  />
-  <h3 class="card_title">Cielo</h3>
-  <p class="card_description">
-  "Tienen la cabeza cuadrada y los ojos simétricos, por lo que su bella mirada se ha convertido en una de sus señas de identidad. Sus ojos son grandes y las orejas resultan largas y en punta.";
-  </p>
-</li>`;
+//2.6 Convertir cada gatito en un objeto
 
-listElement.innerHTML = kittenOne + kittenTwo + kittenThree;
+const kittenData_1 = {
+  image: 'https://dev.adalab.es/gato-siames.webp',
+  name: 'Anastacio',
+  desc: ' Porte elegante, su patrón de color tan característico y sus ojos de un azul intenso, pero su historia se remonta a Asía al menos hace 500 años, donde tuvo su origen muy posiblemente.',
+  race: 'Siamés',
+};
+
+const kittenData_2 = {
+  image: 'https://dev.adalab.es/sphynx-gato.webp',
+  name: 'Fiona',
+  desc: 'Produce fascinación y curiosidad. Exótico, raro, bello, extraño... hasta con pinta de alienígena han llegado a definir a esta raza gatuna que se caracteriza por la «ausencia» de pelo.',
+  race: 'Sphynx',
+};
+
+const kittenData_3 = {
+  image: 'https://dev.adalab.es/maine-coon-cat.webp',
+  name: 'Cielo',
+  desc: 'Tienen la cabeza cuadrada y los ojos simétricos, por lo que su bella mirada se ha convertido en una de sus señas de identidad. Sus ojos son grandes y las orejas resultan largas y en punta.',
+  race: 'Maine Coon',
+};
+
+const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];
+
+//FUNCIONES
+
+function renderKitten(kittenData) {
+  let html = '';
+  if (kittenData.race === '') {
+    html = `Uy, qué despiste, no sabemos su raza.`;
+  } else {
+    html = kittenData.race;
+  }
+
+  const kitten = `<li class="card">
+  <article>
+    <img
+      class="card_img"
+      src=${kittenData.image}
+      alt="gatito"
+    />
+    <h3 class="card_title">${kittenData.name}</h3>
+    <h3 class="card_race">${html}</h3>
+    <p class="card_description">
+    ${kittenData.desc}
+    </p>
+  </article>
+  </li>`;
+  return kitten;
+}
+
+// 2.5 Mostrar/ocultar el formulario
+
+function showNewCatForm() {
+  newForm.classList.remove('collapsed');
+}
+function hideNewCatForm() {
+  newForm.classList.add('collapsed');
+}
+
+function handleClickNewCatForm(event) {
+  event.preventDefault();
+  if (newForm.classList.contains('collapsed')) {
+    showNewCatForm();
+  } else {
+    hideNewCatForm();
+  }
+}
+
+//Adicionar gatito
+
+function addNewKitten(event) {
+  event.preventDefault();
+  const valueDesc = inputDesc.value;
+  const valuePhoto = inputPhoto.value;
+  const valueName = inputName.value;
+
+  if (valueDesc === '' || valuePhoto === '' || valueName === '') {
+    labelMessageError.innerHTML = '¡Uy! Parece que has olvidado algo';
+  } else if (valueDesc !== '' && valuePhoto !== '' && valueName !== '') {
+    labelMessageError.innerHTML = ' ';
+  }
+}
+
+//Cancelar formulario
+function cancelNewKitten(event) {
+  event.preventDefault();
+  newForm.classList.add('collapsed');
+  inputDesc.value = '';
+  inputName.value = '';
+  inputPhoto.value = '';
+}
+
+//Filtrar por descripción
+function filterKitten(event) {
+  event.preventDefault();
+  const descrSearchText = input_search_desc.value;
+  listElement.innerHTML = '';
+  for (const kittenItem of kittenDataList) {
+    if (kittenItem.desc.includes(descrSearchText)) {
+      listElement.innerHTML += renderKitten(kittenItem);
+    }
+  }
+}
+
+//Mostrar listado de gatitos en HTML
+renderKitten(kittenDataList);
+
+//Eventos
+
+linkNewFormElement.addEventListener('click', handleClickNewCatForm);
+buttonAdd.addEventListener('click', addNewKitten);
+buttonCancelForm.addEventListener('click', cancelNewKitten);
+buttonSearch.addEventListener('click', filterKitten);
