@@ -16,6 +16,7 @@ const linkNewFormElement = document.querySelector('.js-button-new-form');
 
 const buttonSearch = document.querySelector('.js-button-search');
 const input_search_desc = document.querySelector('.js_in_search_desc');
+const input_search_race = document.querySelector('.js_in_search_race');
 
 //2.6 Convertir cada gatito en un objeto
 
@@ -68,6 +69,8 @@ function renderKitten(kittenData) {
   </li>`;
   return kitten;
 }
+
+function renderKittenList() {}
 
 // 2.5 Mostrar/ocultar el formulario
 
@@ -137,19 +140,37 @@ function cancelNewKitten(event) {
 }
 
 //Filtrar por descripción
+//2.12
 function filterKitten(event) {
   event.preventDefault();
+
   const descrSearchText = input_search_desc.value;
+  const raceSearchText = input_search_race.value;
+
+  listElement.innerHTML = '';
+
+  const newArray = kittenDataList
+    .filter((kittenItem) => kittenItem.desc.includes(descrSearchText))
+    .filter((kittenItem) => kittenItem.race.includes(raceSearchText));
+
+  console.log(newArray);
+  renderKittenList(newArray);
+}
+
+/*for (const kittenItem of kittenDataList) {
+  if (kittenItem.desc.includes(descrSearchText)) {
+    listElement.innerHTML += renderKitten(kittenItem);
+  }
+}*/
+
+function renderKittenList(kittenDataList) {
   listElement.innerHTML = '';
   for (const kittenItem of kittenDataList) {
-    if (kittenItem.desc.includes(descrSearchText)) {
-      listElement.innerHTML += renderKitten(kittenItem);
-    }
+    listElement.innerHTML += renderKitten(kittenItem);
   }
 }
 
-//Mostrar listado de gatitos en HTML
-renderKitten(kittenDataList);
+renderKittenList(kittenDataList);
 
 //Eventos
 
