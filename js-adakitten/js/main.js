@@ -41,7 +41,7 @@ const kittenData_3 = {
   race: 'Maine Coon',
 };
 
-const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];
+// const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];
 
 //FUNCIONES
 
@@ -170,7 +170,25 @@ function renderKittenList(kittenDataList) {
   }
 }
 
-renderKittenList(kittenDataList);
+
+
+///Obtener listado de gatitos desde el servidor
+
+const GITHUB_USER = '<CohenDaniela>';
+const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;
+
+let kittenDataList = [];
+
+fetch(SERVER_URL).then((response) => response.json())
+.then ((data) => {
+  console.log(data)
+  kittenDataList = data.results;
+  renderKittenList(kittenDataList);
+});
+
+
+
+
 
 //Eventos
 
@@ -178,3 +196,4 @@ linkNewFormElement.addEventListener('click', handleClickNewCatForm);
 buttonAdd.addEventListener('click', addNewKitten);
 buttonCancelForm.addEventListener('click', cancelNewKitten);
 buttonSearch.addEventListener('click', filterKitten);
+
