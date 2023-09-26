@@ -90,8 +90,42 @@ function handleClickNewCatForm(event) {
   }
 }
 
-//Adicionar gatito
+//2.14 2. BONUS: Crear un nuevo gatito en el servidor
+//hacemos la petición de guardar un gatito en el servidor
 
+function addNewKittenServer(newKittenDataObject) {
+  fetch(`https://dev.adalab.es/api/kittens/${GITHUB_USER}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newKittenDataObject),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        //Agrega el nuevo gatito al listado
+        kittenDataList.push(newKittenDataObject);
+        //Guarda el listado actualizado en el local storage
+        localStorage.setItem('kittenDataList', JSON.stringify(kittenDataList));
+        //Limpia los valores de cada input
+        inputDesc.value = '';
+        inputName.value = '';
+        inputPhoto.value = '';
+        inputRace.value = '';
+
+        //Muestra un mensaje al usuario: "Mola! Un nuevo gatito en Adalab!".
+        labelMessageError.innerHTML = '¡Mola! ¡Un nuevo gatito en Adalab!';
+
+        //Pinta el listado de gatitos
+        renderKitten(kittenDataList);
+      } else {
+        //muestra un mensaje de error.
+        labelMessageError.innerHTML =
+          'No se pudo guardar el nuevo gatito en el servidor.';
+      }
+    });
+}
+
+//Adicionar nuevo gatito
 function addNewKitten(event) {
   event.preventDefault();
   const valueDesc = inputDesc.value;
@@ -100,32 +134,18 @@ function addNewKitten(event) {
   const valueRace = inputRace.value;
 
   if (valueDesc === '' || valuePhoto === '' || valueName === '') {
-    labelMessageError.innerHTML = '¡Uy! Parece que has olvidado algo';
+    labelMessageError.innerHTML = 'Debe rellenar todos los valores';
   } else {
     if (valueDesc !== '' && valuePhoto !== '' && valueName !== '') {
-      labelMessageError.innerHTML = ' ';
-
-      //Dentro de esta función crea un nuevo objeto newKittenDataObject
+      labelMessageError.innerHTML = '';
+      //Construir un nuevo objeto con el gatito
       const newKittenDataObject = {
         image: valuePhoto,
         name: valueName,
         desc: valueDesc,
         race: valueRace,
       };
-
-      //Agrega el objeto anterior al listado de gatitos
-      kittenDataList.push(newKittenDataObject);
-
-      //Limpia los valores de los inputs
-      inputDesc.value = '';
-      inputName.value = '';
-      inputPhoto.value = '';
-      inputRace.value = '';
-
-      //Muestra un mensaje al usuario: "Mola! Un nuevo gatito en Adalab!".
-      labelMessageError.innerHTML = '¡Mola! ¡Un nuevo gatito en Adalab!';
-      //Vuelve a pintar el listado de gatitos
-      renderKitten(kittenDataList);
+      addNewKittenServer(newKittenDataObject);
     }
   }
 }
@@ -170,26 +190,37 @@ function renderKittenList(kittenDataList) {
   }
 }
 
-
-
 ///Obtener listado de gatitos desde el servidor
 
 const GITHUB_USER = '<CohenDaniela>';
 const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;
 
 let kittenDataList = [];
+//2.14 Guardar en el local storage, variable para almacenar los gatitos
+const kittenListStored = JSON.parse(localStorage.getItem('kittensList'));
 
-fetch(SERVER_URL).then((response) => response.json())
-.then ((data) => {
-  console.log(data)
-  kittenDataList = data.results;
+if (kittenListStored != null) {
+  kittenDataList = kittenListStored; //si la lista de gatitos está guardada
+  //pinto la lista
   renderKittenList(kittenDataList);
-});
+} else {
+  //si no está guardada hacemos la petición
+  fetch(SERVER_URL)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      kittenDataList = data.results;
+      //guardamos la lista en el local storage
+      localStorage.setItem('kittensList', JSON.stringify(kittenDataList));
+      //la pintamos
+      renderKittenList(kittenDataList);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
-
-
-
-
+console.log(kittenListStored);
 //Eventos
 
 linkNewFormElement.addEventListener('click', handleClickNewCatForm);
@@ -197,3 +228,12 @@ buttonAdd.addEventListener('click', addNewKitten);
 buttonCancelForm.addEventListener('click', cancelNewKitten);
 buttonSearch.addEventListener('click', filterKitten);
 
+/** lo de ayer
+ * fetch(SERVER_URL)
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+    kittenDataList = data.results;
+    renderKittenList(kittenDataList);
+  });
+ */
